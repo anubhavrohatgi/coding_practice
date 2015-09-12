@@ -16,7 +16,7 @@ bool myfunction(Job j1, Job j2) {
 	return j1.end < j2.end;
 }
 
-// This search method has O(n) time complexity, making findMaxProfit() to be O(n^2)
+// This search method has O(n) time complexity
 int findLatestNonConflict(const vector<Job> &v, int i) {
 	for(int j = i-1; j>=0; j--) {
 		if(v[j].end <= v[i].start) {
@@ -25,6 +25,27 @@ int findLatestNonConflict(const vector<Job> &v, int i) {
 	}
 	// return -1 when Job not found
 	return -1;
+}
+
+int findMaxProfitRecursiveUtil(const vector<Job> &v, int n) {
+	if(n == 1) {
+		return v[0].value;
+	}
+
+	int includeProfit = v[n-1].value;
+	int i = findLatestNonConflict(v, n);
+	if(i != -1) {
+		includeProfit += findMaxProfitRecursiveUtil(v, i+1);
+	}
+
+	int excludeProfit = findMaxProfitRecursiveUtil(v, n-1);
+
+	return max(excludeProfit, includeProfit);
+}
+
+// O(2^n) algorithm
+int findMaxProfitRecursive(const vector<Job> &v) {
+	return findMaxProfitRecursiveUtil(v, v.size());
 }
 
 // O(n^2) algorithm
@@ -71,5 +92,5 @@ int main() {
 	sort(v.begin(), v.end(), myfunction);
 	printJobs(v);
 
-	cout << "Max profit that we can get from above jobs withiout overlapping is " << findMaxProfit(v) << endl;
+	cout << "Max profit that we can get from above jobs withiout overlapping is " << findMaxProfitRecursive(v) << endl;
 }
