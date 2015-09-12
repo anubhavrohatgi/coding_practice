@@ -19,7 +19,7 @@ bool myfunction(Job j1, Job j2) {
 // This search method has O(n) time complexity
 int findLatestNonConflict(const vector<Job> &v, int i) {
 	for(int j = i-1; j>=0; j--) {
-		if(v[j].end <= v[i].start) {
+		if(v[j].end <= v[i-1].start) {
 			return j;
 		}
 	}
@@ -92,5 +92,5 @@ int main() {
 	sort(v.begin(), v.end(), myfunction);
 	printJobs(v);
 
-	cout << "Max profit that we can get from above jobs withiout overlapping is " << findMaxProfitRecursive(v) << endl;
+	cout << "Max profit that we can get from above jobs withiout overlapping is " << findMaxProfit(v) << endl;
 }
