@@ -43,21 +43,12 @@ int lpsDP(const string &s) {
 	for(int len=2; len<=n; len++) {
 		for(int i=0; i < n - len + 1; i++) {
 			int j = i + len - 1;
-			/*
-			if(s[i] == s[j] && len == 2)
-				dp[i][j] = 2;
-			else if(s[i] == s[j])
-				dp[i][j] = dp[i+1][j-1]+2;
-			else
-				dp[i][j] = max(dp[i+1][j], dp[i][j-1]);
-				*/
-			cout << "i = " << i << " , j = " << j << endl;
 			if(s[i] != s[j])
 				dp[i][j] = max(dp[i+1][j], dp[i][j-1]);
 			else if(s[i] == s[j] && len == 2)
 				dp[i][j] = 2;
 			else
-				dp[i][j] = dp[i+1][j-1];
+				dp[i][j] = dp[i+1][j-1] + 2;
 		}
 	}
 
@@ -67,5 +58,6 @@ int lpsDP(const string &s) {
 
 int main() {
 	string seq = "GEEKSFORGEEKS";
-	cout << "Input = " << seq << " , the length of the LPS is " << lpsDP(seq) << endl;
+	string seq2 = "GEEKS FOR GEEKS";
+	cout << "Input = " << seq2 << " , the length of the LPS is " << lpsDP(seq2) << endl;
 }
