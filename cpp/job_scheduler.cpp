@@ -1,17 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-// comment
+#include "job.cpp"
 
 using namespace std;
-
-struct Job {
-	int start;
-	int end;
-	int value;
-
-	Job(int s, int e, int v) : start(s), end(e), value(v) {}
-};
 
 bool myfunction(Job j1, Job j2) {
 	return j1.end < j2.end;
@@ -90,7 +82,10 @@ int main() {
 	v.push_back(j3);
 	v.push_back(j4);
 
-	sort(v.begin(), v.end(), myfunction);
+	//sort(v.begin(), v.end(), myfunction);
+	sort(v.begin(), v.end(), [](Job j1, Job j2) {
+					return j1.end < j2.end;
+					} );
 	printJobs(v);
 
 	cout << "Max profit that we can get from above jobs withiout overlapping is " << findMaxProfit(v) << endl;
