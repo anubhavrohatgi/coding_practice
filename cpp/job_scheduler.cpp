@@ -72,10 +72,10 @@ void printJobs(const vector<Job> &v) {
 
 int main() {
 	vector<Job> v;
-	Job j1(3, 10, 20);
+	Job j1(2, 100,200);
 	Job j2(1, 2 , 50);
 	Job j3(6, 19, 100);
-	Job j4(2, 100,200);
+	Job j4(3, 10, 20);
 
 	v.push_back(j1);
 	v.push_back(j2);
