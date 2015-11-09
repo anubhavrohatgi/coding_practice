@@ -51,7 +51,7 @@ int findMaxProfit(const vector<Job> &v) {
 	vector<int> maxProfit(n, 0);
 	maxProfit[0] = v[0].value;
 
-	for(int i=0; i<n; i++) {
+	for(int i=1; i<n; i++) {
 		int includeProfit = v[i].value;
 		int last = findLatestNonConflict(v, i);
 		if(last != -1) {
