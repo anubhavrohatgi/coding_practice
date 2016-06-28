@@ -1,3 +1,5 @@
+// General Cache with plugable strategy, use LRU strategy by default
+
 #include <iostream>
 #include <utility>
 #include <vector>
