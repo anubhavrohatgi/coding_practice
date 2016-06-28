@@ -67,6 +67,8 @@ private:
 
 public:
 	Cache(int size = 3) : m_size(size), strategy(new LRUStrategy(m_size)) {}
+	
+	Cache(int size, Strategy *stra) : m_size(size), strategy(stra) {}
 
 	int get(int key) {
 		return strategy->handleGet(key);
