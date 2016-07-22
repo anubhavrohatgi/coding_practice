@@ -1,3 +1,8 @@
+/**
+ * Question:
+ * Given a directed graph, find if there is cycle in it.
+ */  
+
 #include <iostream>
 #include <vector>
 #include <set>

@@ -1,3 +1,12 @@
+/**
+ * Question:
+ * Given a string, reverse the words sequence but not punctuations 
+ *
+ * For example:
+ * input  = "Hello, world! How are you?"
+ * output = "you, are! How world Hello?" 
+ */ 
+
 #include <iostream>
 
 using namespace std;

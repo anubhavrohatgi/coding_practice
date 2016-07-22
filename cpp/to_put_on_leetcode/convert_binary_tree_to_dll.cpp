@@ -1,3 +1,8 @@
+/**
+ * Question:
+ * Given a binary tree, convert it to doubly linked list with inorder sequence
+ */ 
+
 #include <iostream>
 
 using namespace std;
