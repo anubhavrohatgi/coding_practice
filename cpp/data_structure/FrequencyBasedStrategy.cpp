@@ -147,11 +147,12 @@ public:
 			return;
 		}
 
-		if(total_nodes <= m_size)
+		if(total_nodes < m_size+1)
 			++total_nodes;
-	
+
+		cout << total_nodes << endl;
 		// cache is full, need to evict
-		if(total_nodes == m_size) {
+		if(total_nodes == m_size+1) {
 			GroupNode *smallestGroup = tail->prev;
 			int smallestCount = (*smallestGroup->nodes.begin())->count;
 			smallestGroup->nodes.erase(smallestGroup->nodes.begin());
