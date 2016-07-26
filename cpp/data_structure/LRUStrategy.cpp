@@ -42,8 +42,12 @@ public:
 	}
 
 	void printCache() {
+		cout << "----- Information for LRU Cache -----" << endl;
 		for(auto a = m_list.begin(); a != m_list.end(); a++)
 			cout << "(" << a->first << " , " << a->second << ") ";
+		
+		cout << endl;
+		cout << "-------------------------------------" << endl;
 		cout << endl;
 	}
 };

@@ -43,13 +43,158 @@
 #include <iostream>
 #include <utility>
 #include <unordered_map>
+#include <unordered_set>
 #include <list>
-#include "Strategy.h"
+
+#ifndef STRATEGY_H
+#define STRATEGY_H
+#endif
 
 using namespace std;
 
-class FrequencyBasedStrategy : public Strategy {
-	// inherit constructor
-	using Strategy::Strategy;
+/**
+ * Class that stores cache value and count
+ */ 
+class Node {
+public:
+	int value;
+	int count;
 
+	Node(int v) : value(v), count(1) {}
+};
+/**
+ * Class that hosts a group of Node objects, it is also a doubly linked list entry
+ */ 
+class GroupNode {
+public:
+	GroupNode *prev, *next;
+	unordered_set<Node*> nodes;
+};
+
+class FrequencyBasedStrategy : public Strategy {
+// inherit constructor
+using Strategy::Strategy;
+
+private:
+	// keep track of total number of nodes
+	int total_nodes;
+	// This two are just for quick access to the head and tail of the DLL, don't store any information in them
+	GroupNode *head, *tail;
+	// key : count
+	// value : the group in which all nodes have same count number
+	unordered_map<int, GroupNode*> count_map;
+	// quick access to Node*, just as we do in LRU
+	// key : cache key, value : node that holds the key
+	unordered_map<int, Node*> node_map;
+
+	// remove a given node from DLL
+	void detach(GroupNode *g) {
+		g->prev->next = g->next;
+		g->next->prev = g->prev;
+		delete g;
+		return;
+	}
+
+	// touch a node, increase the count by one, and join the previou group or create a new one
+	void touch(Node *n) {
+		// remove the node from original group
+		GroupNode *oldGroup = count_map[n->count], *prevGroup = oldGroup->prev;
+		oldGroup->nodes.erase(n);
+		if(oldGroup->nodes.size() == 0) {
+			count_map.erase(n->count);
+			detach(oldGroup);
+		}
+
+		n->count++;
+		// try to join previous group
+		if(count_map.find(n->count) != count_map.end() && count_map[n->count] == prevGroup) {
+			prevGroup->nodes.insert(n);
+		}
+		// otherwise create a new group
+		else {
+			GroupNode *newGroup = new GroupNode();
+			newGroup->nodes.insert(n);
+			// insert new node
+			newGroup->next = prevGroup->next;
+			prevGroup->next->prev = newGroup;
+			prevGroup->next = newGroup;
+			newGroup->prev = prevGroup;
+			// update count map
+			count_map[n->count] = newGroup;
+		}
+	}
+public:
+	FrequencyBasedStrategy(int c = 3) : total_nodes(0), Strategy(c), head(new GroupNode()), tail(new GroupNode()) {
+		head->next = tail;
+		tail->prev = head;
+	}
+
+	int handleGet(int key) {
+		auto found_iter = node_map.find(key);
+		if(found_iter == node_map.end())
+			return -1;
+
+		touch(found_iter->second);
+		return found_iter->second->value;
+	}
+
+	void handlePut(int key, int value) {
+		auto found_iter = node_map.find(key);
+		// node is already in cache, modify and return
+		if(found_iter != node_map.end()) {
+			found_iter->second->value = value;
+			touch(found_iter->second);
+			return;
+		}
+
+		if(total_nodes <= m_size)
+			++total_nodes;
+	
+		// cache is full, need to evict
+		if(total_nodes == m_size) {
+			GroupNode *smallestGroup = tail->prev;
+			int smallestCount = (*smallestGroup->nodes.begin())->count;
+			smallestGroup->nodes.erase(smallestGroup->nodes.begin());
+			if(smallestGroup->nodes.size() == 0) {
+				count_map.erase(smallestCount);
+				detach(smallestGroup);
+			}
+		}
+
+		Node *n = new Node(value);
+		node_map[key] = n;
+		// try to join the group which has count=1
+		if(count_map.find(1) != count_map.end()) {
+			GroupNode *joinGroup = count_map[1];
+			joinGroup->nodes.insert(n);
+		}
+		// otherwise, create a new group and append to tail
+		else {
+			GroupNode *newGroup = new GroupNode();
+			newGroup->nodes.insert(n);
+			// link the new group
+			tail->prev->next = newGroup;
+			newGroup->prev = tail->prev;
+			newGroup->next = tail;
+			tail->prev = newGroup;
+
+			count_map[1] = newGroup;
+		}
+	}
+
+	void printCache() {
+		GroupNode *ptr = head->next;
+		cout << "----- Information for Frequency-Based Cache -----" << endl;
+		while(ptr != tail) {
+			
+			cout << "In group count = " << (*ptr->nodes.begin())->count << endl;
+			cout << "Nodes are : " << endl;
+			for(Node *n : ptr->nodes) {
+				cout << n->value << endl;
+			}
+			ptr = ptr->next;
+		}
+		cout << "-------------------------------------------------" << endl;
+		cout << endl;
+	}
 };
