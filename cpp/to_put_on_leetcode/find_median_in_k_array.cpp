@@ -3,6 +3,7 @@
 #include <queue>
 #include <climits>
 #include <stdio.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -47,6 +48,9 @@ int findMedian(vector<vector<int>> &arrs) {
 				}
 			}
 		}
+
+		if(n <= 2)
+			break;
 
 		int lowest_med = low_meds.top().first;
 		int lowest_med_from = low_meds.top().second;
@@ -105,6 +109,18 @@ int findMedian(vector<vector<int>> &arrs) {
 	}
 }
 
+double findMedianBruteForce(vector<vector<int>> &arrs) {
+	vector<int> nums;
+	for(auto arr : arrs) {
+		for(auto n : arr)
+			nums.push_back(n);
+	}
+	
+	sort(nums.begin(), nums.end());
+	
+	return (nums.size() % 2) ? nums[nums.size()/2] : (double(nums[nums.size()/2]) + double(nums[nums.size()/2+1]))/2;
+}
+
 int main() {
 	vector<vector<int>> arrs = {
 		{1, 3, 5, 6, 7, 8},
@@ -115,4 +131,6 @@ int main() {
 	};
 
 	findMedian(arrs);
+
+	cout << "find median with brute force : " << findMedianBruteForce(arrs) << endl;
 }
