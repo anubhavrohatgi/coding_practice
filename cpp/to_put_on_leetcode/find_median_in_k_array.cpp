@@ -2,10 +2,15 @@
 #include <iostream>
 #include <queue>
 #include <climits>
+#include <stdio.h>
 
 using namespace std;
 
 vector<int> starts, lens;
+
+int findMedian() {
+
+}
 
 int findMedian(vector<vector<int>> &arrs) {
 	int n = arrs.size();
@@ -13,7 +18,11 @@ int findMedian(vector<vector<int>> &arrs) {
 		starts.push_back(0);
 		lens.push_back(a.size());
 	}
-	
+
+	// use to record the remaining arrays
+	bool remain[n];
+	memset(remain, true, sizeof(remain));
+
 	while(n > 2) {
 		priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> low_meds;
 		priority_queue<pair<int,int>, vector<pair<int,int>>, less<pair<int,int>>> high_meds;
@@ -32,7 +41,10 @@ int findMedian(vector<vector<int>> &arrs) {
 				high_meds.push({high_med, i});
 			}
 			else {
-				--n;
+				if(remain[i]) {
+					remain[i] = false;
+					--n;
+				}
 			}
 		}
 
@@ -50,6 +62,18 @@ int findMedian(vector<vector<int>> &arrs) {
 		int i = starts[lowest_med_from], i_lower = i;
 		int j = starts[highest_med_from] + lens[highest_med_from] - 1, j_upper = j;
 
+		// number of elements to be removed from the array which hosting the lowest median. Inclusive.
+		int num_of_elements_to_remove1 = lens[lowest_med_from]/2;
+		// number of elements to be removed from the array which hosting the highest median. Inclusive.
+		int num_of_elements_to_remove2 = lens[highest_med_from]/2 + (lens[highest_med_from] % 2 ? 1 : 0);
+		// min between these two values
+		int num_to_remove = min(num_of_elements_to_remove1, num_of_elements_to_remove2);
+		// remove elementa from both sides by shrinking the array range
+		starts[lowest_med_from] += num_to_remove;
+		lens[lowest_med_from] -= num_to_remove;
+
+		lens[highest_med_from] -= num_to_remove;
+/*
 		while(true) {
 			if(i>i_lower && arrs[lowest_med_from][i-1] == lowest_med)
 				break;
@@ -64,7 +88,7 @@ int findMedian(vector<vector<int>> &arrs) {
 			++i;
 			--j;
 		}
-
+*/
 		cout << "-------------" << endl;
 		cout << "Now valid array : " << endl;
 		for(int i=0; i<arrs.size(); i++) {
