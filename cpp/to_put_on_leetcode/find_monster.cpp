@@ -4,6 +4,32 @@
 
 using namespace std;
 
+bool canFindMonster2(int numOfCaves, const vector<int> &strategy) {
+	vector<bool> remaining(numOfCaves, true);
+
+	for(int pos : strategy) {
+		remaining[pos] = false;
+
+		vector<bool> next(numOfCaves, false);
+		for(int i=0; i<numOfCaves; i++) {
+			bool b = false;
+			if(i>0)
+				b |= remaining[i-1];
+			if(i<numOfCaves-1)
+				b |= remaining[i+1];
+
+			next[i] = b;
+		}
+		remaining = next;
+	}
+	
+	for(bool b : remaining) {
+		if(b == true)
+			return false;
+	}
+	return true;
+}
+
 bool canFindMonster(int numOfCaves, const vector<int> &strategy) {
 	queue<int> q;
 	for(int i=0; i<numOfCaves; i++) {
@@ -43,4 +69,5 @@ bool canFindMonster(int numOfCaves, const vector<int> &strategy) {
 int main() {
 	vector<int> strategy = {1, 2, 3, 1, 2, 3};
 	cout << canFindMonster(5, strategy) << endl;
+	cout << canFindMonster2(5, strategy) << endl;
 }
