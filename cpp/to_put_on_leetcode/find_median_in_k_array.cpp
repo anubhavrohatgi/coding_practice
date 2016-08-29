@@ -3,17 +3,60 @@
 #include <queue>
 #include <climits>
 #include <stdio.h>
+#include <string.h>
 #include <algorithm>
+#include <time.h> 
+#include <stdlib.h>
+#include <iterator>
+#include <iterator>
 
 using namespace std;
 
 vector<int> starts, lens;
 
-int findMedian() {
-
+int findInclusiveSmaller(const vector<vector<int>> &arrs, int candidate) {
+	int ret = 0;
+	for(vector<int> arr : arrs) {
+		
+	}
 }
 
-int findMedian(vector<vector<int>> &arrs) {
+double findMedian(vector<vector<int>> &arrs) {
+	int N = 0;
+	for(auto arr : arrs)
+		N += arr.size();
+
+	int global_max = INT_MIN, global_min = INT_MAX;
+	for(auto arr : arrs) {
+		if(arr.size() > 0) {
+			global_min = min(global_min, arr[0]);
+			global_max = max(global_max, arr[arr.size()-1]);
+		}
+	}
+
+	while(true) {
+		int candidate = (global_max + global_min)/2;
+		// find lower bound and upper bound for each array
+		int smaller = 0, larger = 0;
+		for(vector<int> arr : arrs) {
+			auto it = lower_bound(arr.begin(), arr.end(), candidate);
+			smaller += max(int(distance(arr.begin(), it) - 1) , 0);
+
+			it = upper_bound(arr.begin(), arr.end(), candidate);
+			larger += (arr.size() - distance(arr.begin(), it));
+		}
+		// found median and there are duplicates in the middle
+		if(smaller <= N/2 && larger <= N/2) {
+		
+		}
+	}
+
+	return 0.0;
+}
+
+int findMedian2(vector<vector<int>> &arrs) {
+	starts.clear();	
+	lens.clear();	
 	int n = arrs.size();
 	for(auto a : arrs) {
 		starts.push_back(0);
@@ -77,22 +120,7 @@ int findMedian(vector<vector<int>> &arrs) {
 		lens[lowest_med_from] -= num_to_remove;
 
 		lens[highest_med_from] -= num_to_remove;
-/*
-		while(true) {
-			if(i>i_lower && arrs[lowest_med_from][i-1] == lowest_med)
-				break;
-			if(j<j_upper && arrs[highest_med_from][j+1] == highest_med)
-				break;
-			// remove elementa from both sides by shrinking the array range
-			starts[lowest_med_from]++;
-			lens[lowest_med_from]--;
-
-			lens[highest_med_from]--;
-
-			++i;
-			--j;
-		}
-*/
+		
 		cout << "-------------" << endl;
 		cout << "Now valid array : " << endl;
 		for(int i=0; i<arrs.size(); i++) {
@@ -107,6 +135,7 @@ int findMedian(vector<vector<int>> &arrs) {
 		cout << "-------------" << endl;
 		cout << endl;
 	}
+	return 0;
 }
 
 double findMedianBruteForce(vector<vector<int>> &arrs) {
@@ -117,8 +146,8 @@ double findMedianBruteForce(vector<vector<int>> &arrs) {
 	}
 	
 	sort(nums.begin(), nums.end());
-	
-	return (nums.size() % 2) ? nums[nums.size()/2] : (double(nums[nums.size()/2]) + double(nums[nums.size()/2+1]))/2;
+		
+	return (nums.size() % 2 == 0) ? nums[nums.size()/2] : (double(nums[nums.size()/2]) + double(nums[nums.size()/2+1]))/2;
 }
 
 int main() {
@@ -133,4 +162,7 @@ int main() {
 	findMedian(arrs);
 
 	cout << "find median with brute force : " << findMedianBruteForce(arrs) << endl;
+
+	//vector<int> nums = {1, 2, 3, 4, 4, 4, 6, 7, 8};
+	//cout << (nums.size() - distance(nums.begin(), upper_bound(nums.begin(), nums.end(), 4))) << endl;
 }
