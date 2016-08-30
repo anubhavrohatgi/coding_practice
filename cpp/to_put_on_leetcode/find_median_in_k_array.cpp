@@ -14,46 +14,80 @@ using namespace std;
 
 vector<int> starts, lens;
 
-int findInclusiveSmaller(const vector<vector<int>> &arrs, int candidate) {
-	int ret = 0;
-	for(vector<int> arr : arrs) {
-		
-	}
-}
-
+// Approach 1. Binary search
 double findMedian(vector<vector<int>> &arrs) {
 	int N = 0;
 	for(auto arr : arrs)
 		N += arr.size();
 
-	int global_max = INT_MIN, global_min = INT_MAX;
+	int L = INT_MAX, U = INT_MIN;
 	for(auto arr : arrs) {
 		if(arr.size() > 0) {
-			global_min = min(global_min, arr[0]);
-			global_max = max(global_max, arr[arr.size()-1]);
+			L = min(L, arr[0]);
+			U = max(U, arr[arr.size()-1]);
 		}
 	}
 
 	while(true) {
-		int candidate = (global_max + global_min)/2;
+		int mid = L + (U - L)/2;
 		// find lower bound and upper bound for each array
 		int smaller = 0, larger = 0;
-		for(vector<int> arr : arrs) {
-			auto it = lower_bound(arr.begin(), arr.end(), candidate);
-			smaller += max(int(distance(arr.begin(), it) - 1) , 0);
 
-			it = upper_bound(arr.begin(), arr.end(), candidate);
+		int max_smaller = L, min_larger = U;
+		for(vector<int> arr : arrs) {
+			auto it = lower_bound(arr.begin(), arr.end(), mid);
+			if(mid >= *arr.begin()) {
+				smaller += distance(arr.begin(), it);
+			}
+			// keep track of the largest number which is a little bit smaller than mid
+			if(int(distance(arr.begin(), it) - 1) >= 0)
+				max_smaller = max(max_smaller, (it==arr.end()) ? arr.back() : *(it-1) );
+
+			it = upper_bound(arr.begin(), arr.end(), mid);
 			larger += (arr.size() - distance(arr.begin(), it));
+
+			// keep track of the smallest number which is a little bit larger than mid
+			if(it != arr.end())
+				min_larger = min(min_larger, *it);
 		}
+		
 		// found median and there are duplicates in the middle
 		if(smaller <= N/2 && larger <= N/2) {
-		
+			if(N%2) {
+				return mid; 
+			}
+			else {
+				if(smaller + larger == N) {
+					// if mid appears in the arrays, it means at least one of smaller or larger is < N/2
+					// so if smaller + larger == N, it means mid is not in the arrays
+					return (max_smaller + min_larger) / 2.0;
+				}
+				else if(smaller < N/2 && larger < N/2) {
+					// mid is in the arrays, and smaller < N/2 && larger < N/2, meaning that there are all duplicates in the middle
+					return mid;
+				}
+				else if(smaller == N/2) {
+					// x, x, x, 7, 7, x
+					return (max_smaller + mid) / 2.0;
+				}
+				else if(larger == N/2) {
+					// x, 7, 7, x, x, x
+					return (min_larger + mid) / 2.0;
+				}
+			}
+		}
+		else if(smaller > N/2) {
+			U = mid;
+		}
+		else {
+			L = mid;
 		}
 	}
 
 	return 0.0;
 }
 
+// Approach 2. http://stackoverflow.com/questions/6182488/median-of-5-sorted-arrays
 int findMedian2(vector<vector<int>> &arrs) {
 	starts.clear();	
 	lens.clear();	
@@ -156,13 +190,25 @@ int main() {
 		{4, 8, 10, 15, 21},
 		{1, 4, 6, 7},
 		{2, 100, 1001, 1002},
-		{9}
+		{7, 9}
 	};
 
-	findMedian(arrs);
+	vector<vector<int>> arrs2 = {
+		{7},
+		{8},
+		{7},
+		{2},
+		{2},
+		{1}
+	};
 
-	cout << "find median with brute force : " << findMedianBruteForce(arrs) << endl;
+	cout << "find median with binary search : " << findMedian(arrs2) << endl;
+//	cout << "find median with brute force : " << findMedianBruteForce(arrs2) << endl;
 
-	//vector<int> nums = {1, 2, 3, 4, 4, 4, 6, 7, 8};
+//	vector<int> nums = {1, 2, 3, 4, 4, 4, 6, 7, 8};
+//	auto it = lower_bound(nums.begin(), nums.end(), 5);
+//	cout << *it << endl;
+
+//	cout << distance(nums.begin(), nums.end()) << endl;
 	//cout << (nums.size() - distance(nums.begin(), upper_bound(nums.begin(), nums.end(), 4))) << endl;
 }
