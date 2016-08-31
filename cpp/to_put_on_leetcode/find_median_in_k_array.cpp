@@ -35,6 +35,9 @@ double findMedian(vector<vector<int>> &arrs) {
 
 		int max_smaller = L, min_larger = U;
 		for(vector<int> arr : arrs) {
+			if(arr.size() == 0)
+				continue;
+
 			auto it = lower_bound(arr.begin(), arr.end(), mid);
 			if(mid >= *arr.begin()) {
 				smaller += distance(arr.begin(), it);
@@ -195,11 +198,11 @@ int main() {
 
 	vector<vector<int>> arrs2 = {
 		{7},
-		{8},
-		{7},
-		{2},
-		{2},
-		{1}
+//		{8},
+//		{7},
+//		{2},
+//		{2},
+//		{1}
 	};
 
 	cout << "find median with binary search : " << findMedian(arrs2) << endl;
