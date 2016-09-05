@@ -72,11 +72,24 @@ int main() {
 	};
 
 	myIterator it = myIterator(data);
-	while(it.hasNext()) {
+//	while(it.hasNext()) {
 //		cout << it.next() << endl;
-		it.next();
-		it.remove();
-		it.printRawData();
-	}
+//		it.next();
+//		it.remove();
+//		it.printRawData();
+//	}
 
+	it.hasNext();
+	    it.next();
+	        it.hasNext();
+		    it.next();
+		        it.hasNext();
+			    it.next();
+			        it.hasNext();
+				    it.next();
+				        it.remove();
+					    it.printRawData();
+
+					        it.hasNext();
+						    cout << it.next() << endl;
 }
