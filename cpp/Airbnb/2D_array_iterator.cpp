@@ -30,22 +30,9 @@ public:
 
 	void remove() {
 		// TODO if removePtr == -1, throw exception 
-
-		// 2 cases: 	1. removePtr is pointing to the last element of current vector.
-		// 		2. removePtr is pointing to the middle element of current vector.
-		//
-		if(removePtr == (*it).size()-1) {
-			(*it).erase( (*it).begin() + removePtr );
-			removePtr = -1;
-		}
-		else {
-			(*it).erase( (*it).begin() + removePtr );
-			// vector has shrinked, move the pointer backward
-			ptr--;	
-		}
-
-		if((*it).size() == 0)
-			ptr = 0;
+		(*it).erase( (*it).begin() + removePtr );
+		// vector has shrinked, move the pointer backward
+		ptr--;	
 	}
 
 	void printRawData() {
@@ -65,31 +52,18 @@ public:
 
 int main() {
 	vector<vector<int>> data = {
-		{1, 4, 2, 5},
+		{1, 4, 2},
 		{7, 2, 4},
 		{},
 		{9}
 	};
 
 	myIterator it = myIterator(data);
-//	while(it.hasNext()) {
+	while(it.hasNext()) {
 //		cout << it.next() << endl;
-//		it.next();
-//		it.remove();
-//		it.printRawData();
-//	}
+		it.next();
+		it.remove();
+		it.printRawData();
+	}
 
-	it.hasNext();
-	    it.next();
-	        it.hasNext();
-		    it.next();
-		        it.hasNext();
-			    it.next();
-			        it.hasNext();
-				    it.next();
-				        it.remove();
-					    it.printRawData();
-
-					        it.hasNext();
-						    cout << it.next() << endl;
 }
