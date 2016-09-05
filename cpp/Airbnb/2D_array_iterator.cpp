@@ -33,6 +33,7 @@ public:
 
 		// 2 cases: 	1. removePtr is pointing to the last element of current vector.
 		// 		2. removePtr is pointing to the middle element of current vector.
+		//
 		if(removePtr == (*it).size()-1) {
 			(*it).erase( (*it).begin() + removePtr );
 			removePtr = -1;
@@ -42,6 +43,9 @@ public:
 			// vector has shrinked, move the pointer backward
 			ptr--;	
 		}
+
+		if((*it).size() == 0)
+			ptr = 0;
 	}
 
 	void printRawData() {
@@ -49,12 +53,12 @@ public:
 		int p = 0;
 		cout << "-----------" << endl;
 		while(print != end) {
-			while(ptr < (*print).size()) {
-				cout << (*print)[ptr++] << " ";
+			while(p < (*print).size()) {
+				cout << (*print)[p++] << " ";
 			}
 			cout << endl;
 			print++;
-			ptr = 0;
+			p = 0;
 		}
 	}
 };
