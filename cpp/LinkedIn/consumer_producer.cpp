@@ -9,6 +9,7 @@
 
 using namespace std;
 
+// http://codereview.stackexchange.com/questions/84109/a-multi-threaded-producer-consumer-with-c11
 class Buffer {
 private:
 	int m_size;
