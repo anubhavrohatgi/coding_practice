@@ -9,6 +9,51 @@
 
 using namespace std;
 
+// http://stackoverflow.com/questions/27860685/how-to-make-a-multiple-read-single-write-lock-from-more-basic-synchronization-pr
+// Multiple readers and one writer, and starves writer
+class RWLock {
+private:
+	int readers;
+	bool is_writing;
+	mutex mtx;
+	condition_variable readerQ;
+	condition_variable writerQ;
+public:
+	RWLock() : readers(0), is_writing(false), mtx(), readerQ(), writerQ() {}
+
+	void ReadLock() {
+		unique_lock<mutex> lk(mtx);
+		readerQ.wait(lk, [this]{ return !is_writing; } );
+		readers++;
+		lk.unlock();
+	}
+
+	void ReadUnLock() {
+		unique_lock<mutex> lk(mtx);
+		readers--;
+		if(readers == 0)
+			writerQ.notify_all();
+		
+		lk.unlock();
+	}
+
+	void WriteLock() {
+		unique_lock<mutex> lk(mtx);
+		writerQ.wait(lk, [this]{ return !(is_writing || readers > 0); } );
+		is_writing = true;
+
+		lk.unlock();
+	}
+
+	void WriteUnLock() {
+		unique_lock<mutex> lk(mtx);
+		is_writing = false;
+		readerQ.notify_all();
+
+		lk.unlock();
+	}
+};
+
 class ThreadSafeMap {
 private:
 	vector<list<pair<int, int>>> m_map;
@@ -20,12 +65,10 @@ private:
 
 	// Multi-threading
 	// shared_mutex s_mtx;
-	mutex mtx;
-	condition_variable cv;
-	int reader;
-	bool is_writing;
+	RWLock rw_lock;
+
 public:
-	ThreadSafeMap(int size) : m_size(size), reader(0), is_writing(false) {
+	ThreadSafeMap(int size) : m_size(size), rw_lock() {
 		for(int i=0; i<m_size; i++)
 			m_map.push_back(list<pair<int, int>>());
 	}
@@ -33,11 +76,9 @@ public:
 	int get(int key) {
 		// this will do
 		// shared_lock<shared_mutex> lk(s_mtx);
+		rw_lock.ReadLock();
+		
 		int hash_key = hash(key);
-
-		unique_lock<mutex> lk(mtx);
-		cv.wait(lk, [this] { return !is_writing; } );
-		reader++;
 
 		int ret = -1;
 		for(auto it = m_map[hash_key].begin(); it != m_map[hash_key].end(); it++) {
@@ -47,9 +88,7 @@ public:
 			}
 		}
 
-		reader--;
-		cv.notify_all();
-
+		rw_lock.ReadUnLock();
 		return ret;
 	}
 
@@ -58,25 +97,19 @@ public:
 		// unique_lock<shared_mutex> lk(s_mtx);
 		int hash_key = hash(key);
 		
-		unique_lock<mutex> lk(mtx);
-		cv.wait(lk, [this]{ return !(is_writing || reader > 0); } );
-		is_writing = true;
-
+		rw_lock.WriteLock();
 		for(auto it = m_map[hash_key].begin(); it != m_map[hash_key].end(); it++) {
 			if((*it).first == key) {
 				(*it).first = key;
 				(*it).second = val;
-				
-				is_writing = false;
-				cv.notify_all();
+			
+				rw_lock.WriteUnLock();
 				return;
 			}
 		}
 		// new key, insert
 		m_map[hash_key].push_front({key, val});
-
-		is_writing = false;
-		cv.notify_all();
+		rw_lock.WriteUnLock();
 	}
 
 	void print_list(int key) {
