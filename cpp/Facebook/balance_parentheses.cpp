@@ -35,9 +35,11 @@ int main() {
 	string s2 = "((bc)";
 	string s3 = "))a((";
 	string s4 = "(a(b)";
+	string s5 = "((a))()";
 
 	cout << balance_parentheses(s1) << endl;
 	cout << balance_parentheses(s2) << endl;
 	cout << balance_parentheses(s3) << endl;
 	cout << balance_parentheses(s4) << endl;
+	cout << balance_parentheses(s5) << endl;
 }
