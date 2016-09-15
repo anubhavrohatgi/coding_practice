@@ -3,6 +3,7 @@
 
 using namespace std;
 
+// http://www.geeksforgeeks.org/find-distance-two-given-nodes/
 class TreeNode {
 public:
 	TreeNode *left, *right;
@@ -11,35 +12,62 @@ public:
 	TreeNode(int v) : val(v) {}
 };
 
+int findLevel(TreeNode *n, TreeNode *p, int level) {
+	if(n == NULL)
+		return -1;
+	if(n == p) {
+		return level;
+	}
+	
+	int lv1 = findLevel(n->left, p, level+1);
+	int lv2 = findLevel(n->right, p, level+1);
 
-int p_depth = INT_MIN, q_depth = INT_MIN, lca_depth = INT_MIN;
+	return max(lv1, lv2);
+}
 
-TreeNode *lca(TreeNode *root, TreeNode *p, TreeNode *q, int depth) {
+TreeNode *lca(TreeNode *root, TreeNode *p, TreeNode *q, int &d1, int &d2, int &dist, int depth) {
 	if(root == NULL) {
 		return NULL;
 	}
-	if(root == p || root == q) {
-		if(p_depth != INT_MIN)
-			swap(p_depth, q_depth);
-		p_depth = depth;
-
+	if(root == p) {
+		d1 = depth;
+		return root;
+	}
+	if(root == q) {
+		d2 = depth;
 		return root;
 	}
 
-	TreeNode *l = lca(root->left,  p, q, depth+1);
-	TreeNode *r = lca(root->right, p, q, depth+1);
+	TreeNode *l = lca(root->left,  p, q, d1, d2, dist, depth+1);
+	TreeNode *r = lca(root->right, p, q, d1, d2, dist, depth+1);
 
-	if(!l && !r) {
-		if(lca_depth == INT_MIN)
-			lca_depth = depth;
+	if(l && r) {
+		dist = d1 + d2 - 2*depth;
 		return root;
 	}
-	else if(!l)
+	else if(l)
 		return l;
-	else if(!r)
+	else if(r)
 		return r;
 	else
 		return NULL;
+}
+
+int findDistance(TreeNode *root, TreeNode *p, TreeNode *q) {
+	int d1 = -1, d2 = -1, dist = 0;
+	TreeNode *r = lca(root, p, q, d1, d2, dist, 0);
+
+	if(d1 != -1 && d2 != -1) {
+		return dist;
+	}
+	else if(d1 != -1) {
+		return findLevel(p, q, 0);
+	}
+	else if(d2 != -1) {
+		return findLevel(q, p, 0);
+	}
+
+	return -1;
 }
 
 int main() {
@@ -60,7 +88,9 @@ int main() {
 	n3->right = n7;
 	n6->right = n8;
 
-	TreeNode *r = lca(n1, n4, n5, 0);
-	cout << r->val << endl;
-	cout << "lca_depth = " << lca_depth <<  " p_depth = " << p_depth << " q_depth = " << q_depth << endl;
+	cout << findDistance(n1, n4, n5) << endl;
+	cout << findDistance(n1, n4, n6) << endl;
+	cout << findDistance(n1, n3, n4) << endl;
+	cout << findDistance(n1, n2, n4) << endl;
+	cout << findDistance(n1, n8, n5) << endl;
 }
