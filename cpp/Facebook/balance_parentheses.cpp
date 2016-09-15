@@ -3,31 +3,48 @@
 
 using namespace std;
 
+// https://instant.1point3acres.com/thread/180240
 string balance_parentheses(string &s) {
-	string ret, curr;
-	int counter = 0;
-	for(int i=0; i<s.size(); i++) {
-		if(s[i] == '(')
-			counter++;
-		else if(s[i] == ')') {
-			if(counter > 0) {
-				counter--;
-				ret += "(" + curr + ")";
-				curr.clear();
-			}
-			else {
-				ret += curr;
-				curr.clear();
+	int left = 0, right = 0;
+	string ret, tmp;
+
+	for(char c : s) {
+		if(c == '(') {
+			left++;
+			tmp.push_back('(');
+		}
+		else if(c == ')') {
+			if(left > 0) {
+				left--;
+				tmp.push_back(')');
 			}
 		}
-		else
-			curr += s[i];
+		else {
+			tmp.push_back(c);
+		}
 	}
 
-	if(!curr.empty())
-		ret += curr;
+	for(int i=tmp.size()-1; i>=0; i--) {
+		char c = tmp[i];
+		if(c == ')') {
+			right++;
+			ret.push_back(')');
+		}
+		else if(c == '(') {
+			if(right > 0) {
+				right--;
+				ret.push_back('(');
+			}
+		}
+		else {
+			ret.push_back(c);
+		}
+	}
 
+	reverse(ret.begin(), ret.end());
+	
 	return ret;
+
 }
 
 int main() {
