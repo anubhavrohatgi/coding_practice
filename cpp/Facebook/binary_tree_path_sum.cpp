@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -31,6 +32,30 @@ vector<int> binary_tree_path_sum_recursion(TreeNode *root) {
 	return path_sums;
 }
 
+vector<int> binary_tree_path_sum_iteration(TreeNode *root) {
+	vector<int> path_sums;
+	if(root == NULL)
+		return path_sums;
+
+	// first: TreeNode, second: curr_sum
+	queue<pair<TreeNode*, int>> q;
+	q.push({root, root->val});
+	while(!q.empty()) {
+		auto it = q.front();
+		q.pop();
+
+		if(it.first->left == NULL && it.first->right == NULL)
+			path_sums.push_back(it.second);
+
+		if(it.first->left)
+			q.push({ it.first->left, it.second + it.first->left->val });
+		if(it.first->right)
+			q.push({ it.first->right, it.second + it.first->right->val });
+	}
+
+	return path_sums;
+}
+
 void print_vector(const vector<int> &nums) {
 	for(int num : nums) {
 		cout << num << " ";
@@ -57,5 +82,8 @@ int main() {
 	n6->right = n8;
 
 	vector<int> ret1 = binary_tree_path_sum_recursion(n1);
-	print_vector(ret1);	
+	print_vector(ret1);
+
+	vector<int> ret2 = binary_tree_path_sum_iteration(n1);
+	print_vector(ret2);
 }
