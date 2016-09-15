@@ -16,21 +16,32 @@ string print_with_cooldown(const vector<int> &nums, int cooldown) {
 	for(int i=0; i<n; i++) {
 		int num = nums[i];
 
-		while(m.find(num) != m.end() && m[num] >= time) {
-			ret += "_";
-			time++;
+		if(m.find(num) != m.end() && m[num] > time) {
+			ret.append(m[num] - time, '_');
+			time = m[num];
 		}
-
+		
 		ret += to_string(num);
-		m[num] = time + cooldown;
+		m[num] = time + cooldown + 1;
 		time++;
 	}
 	return ret;
 }
 
 int main() {
-	vector<int> nums = {1, 2, 3 ,4, 5, 6, 2, 4, 6, 1, 2, 4};
-	int cooldown = 6;
+	vector<int> nums1 = {1, 1, 2, 1};
+	int cooldown1 = 2;
 
-	cout << print_with_cooldown(nums, cooldown) << endl;
+	cout << print_with_cooldown(nums1, cooldown1) << endl;
+
+	vector<int> nums2 = {1, 2, 3, 1, 2, 3};
+	int cooldown2 = 3;
+
+	cout << print_with_cooldown(nums2, cooldown2) << endl;
+
+
+	vector<int> nums3 = {1, 2, 3 ,4, 5, 6, 2, 4, 6, 1, 2, 4};
+	int cooldown3 = 6;
+
+	cout << print_with_cooldown(nums3, cooldown3) << endl;
 }
