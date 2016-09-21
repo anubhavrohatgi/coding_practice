@@ -51,7 +51,7 @@ void dfs(vector<string> &ret, string &tmp, const string &code, int idx) {
 }
 
 int main() {
-	string code = "1230";
+	string code = "1223";
 
 	cout << decode_way(code) << endl;
 	
